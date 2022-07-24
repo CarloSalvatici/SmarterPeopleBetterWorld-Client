@@ -1,10 +1,12 @@
 <script>
 	import axios from 'axios';
 	import { onMount } from 'svelte';
+	import Thought from './Thought.svelte';
 
 	//const url = 'api/forum/'
 	const forumUrl = 'http://localhost:5000/api/forum'
-	let forumEntries = [{title:"Loading Posts", description:"so, the posts are supposed to be loading, and if you're seeing this for too long then there's probably something wrong"}]
+	//let forumEntries = [{title:"Loading Posts", description:"so, the posts are supposed to be loading, and if you're seeing this for too long then there's probably something wrong"}]
+	let forumEntries = [{thoughtID:"0",approvalRating:{totalAverage:0,totalWeight:0,ratings:[]},author:"staightguy900",description:"im gay",subThoughts:[]}]
 	let newPostData = {}
 	let makePost = "Make Post"
 	let postTitle = ""
@@ -19,6 +21,7 @@
 				params: {},
 			})
 			forumEntries = res.data
+			console.log("Response in Forum.svelte")
 			console.log(res)
 		} catch (err) {
 			console.log(err);
@@ -62,7 +65,6 @@
 			return
 		}
 	}
-
 </script>
 
 <main>
@@ -77,12 +79,10 @@
 			<button on:click={postData}>Post</button>
 		{/if}
 		<br>
-		<button on:click={getData}>Call Api!</button>
 		<div class = "posts-container">
 			{#each forumEntries as data}
 				<div class="post">
-					<h4>{data.title}</h4>
-					<div>{data.description}</div>
+					<Thought thoughtData={data}/>
 				</div>
 			{/each}
 		</div>
