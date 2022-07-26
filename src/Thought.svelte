@@ -1,7 +1,6 @@
 <script>
     export let thoughtData;
     import { onMount } from 'svelte';
-
     import Thought from "./Thought.svelte"
     onMount(() => {
         console.log("thoughtData.subThoughts in Thought.svelte")
@@ -9,11 +8,6 @@
         console.log("thoughtData in Thought.svelte")
         console.log(thoughtData)
 	})
-    //function updateThoughtData() {
-    //    tempData = thoughtData
-    //    thoughtData = tempData
-    //    return
-    //}
 </script>
 
 <main>
