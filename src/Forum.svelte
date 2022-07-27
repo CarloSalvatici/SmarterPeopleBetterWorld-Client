@@ -13,16 +13,13 @@
 	// Data for making a new post
 	let newPostData = {}
 	// Account Data
-	let accountData = {}
+	let accountData = {username: "gayboy99", password: "asshole", accessLevel: 5}
 	let inputUsername = ""
 	let inputPassword = ""
 	let loginMsg = ""
 	// Variables for the make post
 	let makePost = "Make Post"
 	let postDescription = ""
-	let makeLabel2 = ""
-	let makeInput1 = ""
-	let makeInput2 = ""
 
 	//Calling backend
 	onMount(async () => {
@@ -48,24 +45,26 @@
 			console.log(err);
 		}
 	}
-	//Functions for making new posts
-	async function postData() {
+	//Functions for making new forum entries
+	async function makeNewForumEntry() {
 		newPostData = {
-			account: "whatever",
-			title: postTitle,
-			description: postDescription
+			username: accountData.username,
+			password: accountData.password,
+			description: postDescription,
+			forumPostReqType: "new post",
+			timestamp: new Date()
 		}
-		postTitle = ""
 		postDescription = ""
 		try {
 			let res = await axios.post(forumUrl, newPostData)
 			console.log(res)
+			getForumData()
 		} catch (err) {
 			console.log(err);
 		}
 		getForumData()
 	}
-	const makePostFunc = () => {
+	const toggleEntryCreator = () => {
 		if (makePost == "Make Post") {
 			makePost = "Collapse"
 			return
@@ -75,6 +74,21 @@
 			return
 		}
 	}
+	async function replyFunction(description, thoughtID) {
+		console.log(description)
+	}
+	//Delete a forum entry
+	async function deleteForumEntry(thoughtID) {
+		try {let res = await axios.delete(forumUrl, {
+				headers: {},
+				params: {thoughtID: thoughtID, username: accountData.username, password: accountData.password},
+			})
+			getForumData()
+			console.log(res)} catch (err) {
+			console.log(err);
+		}
+	}
+
 	//Functions for accounts
 	async function makeNewAccount() {
 		let newAccountData = {username: inputUsername, password: inputPassword}
@@ -105,38 +119,57 @@
 <main>
 	<div class="container">
 		<h3>Forum!</h3>
-		<hr/>
-		<div class="container">
+		<!--Login Sign Up Stuff-->
+		<div class="my-1">
 			<input placeholder="Username" bind:value={inputUsername}/>
 			<input type="password" placeholder="Password" bind:value={inputPassword}/>
 			<button class="mx-1" on:click={login}>Login</button><button class="mx-1" on:click={makeNewAccount}>Make New Account</button>
 			<span>{loginMsg}</span>
 		</div>
+		<hr/>
 
+		<!--Make New Forum Post-->
 		{#if Object.keys(accountData).length != 0}
-			<button on:click={makePostFunc}>{makePost}</button>
-			{#if makePost == "Collapse"}
-				<div>Description</div><input bind:value={postDescription}>
-				<br/>
-				<button on:click={postData}>Post</button>
-		{/if} {/if}
+			<div class="mb-2">
+				<button on:click={toggleEntryCreator}>{makePost}</button>
+				{#if makePost == "Collapse"}
+					<div class="my-1">
+						<textarea class="new-post-input" placeholder="Say something" bind:value={postDescription}/>
+						<br>
+						<button class="new-post-button" on:click={makeNewForumEntry}>Post</button>
+					</div>
+				{/if} 
+			</div>
+		{/if}
 
-		<br>
-		<div class = "posts-container">
+		<!--Forum Entries Display-->
+		<div>
 			{#each forumEntries as data}
-				<div class="post">
-					<Thought thoughtData={data}/>
+				<div>
+					<Thought thoughtData={data} replyFunction={replyFunction}/>
 				</div>
+				{#if (accountData.accessLevel >= 5)}
+					<button on:click={deleteForumEntry(data.thoughtID)}>Delete</button>
+				{/if}
 			{/each}
 		</div>
 	</div>
 </main>
 
 <style>
-  .posts-container {
-	margin: 5px;
-  }
-  .post {
-	margin: 5px 0px;
-  }
+	.new-post-input {
+		width: 500px;
+		height: 53px;
+		resize: both;
+	}
+/*
+	.btttn{
+		maybe a button class for less important buttons
+	}
+	.bttn:hover {
+		background-color: #c0c0c0;
+		transition: all .3s;
+	}
+*/
+
 </style>
