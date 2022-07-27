@@ -76,6 +76,13 @@
 	}
 	async function replyFunction(description, thoughtID) {
 		console.log(description)
+		try {
+			let res = await axios.put(forumUrl, {username: accountData.username, password: accountData.password, description: description, thoughtID: thoughtID})
+			console.log(res)
+			getForumData()
+		} catch (err) {
+			console.log(err);
+		}
 	}
 	//Delete a forum entry
 	async function deleteForumEntry(thoughtID) {
